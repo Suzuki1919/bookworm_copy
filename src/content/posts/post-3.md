@@ -1,12 +1,11 @@
 ---
-title: What you need to know about Photography
+title: "Be healthy, both physically and mentally"
 meta_title: ""
 description: "meta description"
-date: 2022-04-03T06:00:00+00:00
+date: 2022-04-03T05:00:00Z
 image: "/images/posts/03.jpg"
-categories: ["art"]
-authors: ["Mark Dinn"]
-tags: ["diy", "toy"]
+categories: ["lifestyle"]
+tags: ["health", "fitness"]
 draft: false
 ---
 

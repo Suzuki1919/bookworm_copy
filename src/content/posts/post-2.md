@@ -1,12 +1,11 @@
 ---
-title: Why a balloon is a flexible bag
+title: "The standard Lorem Ipsum passage, used since the 1500s"
 meta_title: ""
 description: "meta description"
 date: 2022-04-02T05:00:00Z
 image: "/images/posts/02.jpg"
-categories: ["development"]
-authors: ["John Doe"]
-tags: ["diy", "toy"]
+categories: ["technology"]
+tags: ["lorem", "ipsum"]
 draft: false
 ---
 

@@ -1,12 +1,11 @@
 ---
-title: "How to make toys from old Olarpaper"
+title: "Professional Application Development Services"
 meta_title: ""
 description: "meta description"
 date: 2022-04-07T05:00:00Z
-image: "/images/posts/01.jpg"
-categories: ["art"]
-authors: ["Mark Dinn"]
-tags: ["diy", "toy"]
+image: "/images/posts/07.jpg"
+categories: ["technology"]
+tags: ["application", "development"]
 draft: false
 ---
 
