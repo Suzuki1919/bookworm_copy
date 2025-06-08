@@ -29,30 +29,7 @@ const { posts } = Astro.props;
             />
           </a>
         )}
-        <ul class="mt-4 text-text flex flex-wrap items-center text-sm">
-          <li class="mb-2 mr-4 flex items-center flex-wrap font-medium">
-            <BiCalendarEdit className="mr-1 h-[16px] w-[16px] text-gray-600" />
-            {dateFormat(post.data.date!)}
-          </li>
-          <li class="mb-2 mr-4 flex items-center flex-wrap">
-            <BiCategoryAlt className="mr-1 h-[16px] w-[16px] text-gray-600" />
-
-            <ul>
-              {post.data.categories.map((category: string, i: number) => (
-                <li class="inline-block">
-                  <a
-                    href={`/categories/${slugify(category)}`}
-                    class="mr-2 hover:text-primary font-medium"
-                  >
-                    {humanize(category)}
-                    {i !== post.data.categories.length - 1 && ","}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </li>
-        </ul>
-        <h3 class="h5">
+        <h3 class="h5 mt-4">
           <a
             href={`/${post.id}`}
             class="block hover:text-primary transition duration-300"

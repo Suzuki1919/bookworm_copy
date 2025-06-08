@@ -1,22 +1,22 @@
 ---
-title: "What you need to know about photography"
-meta_title: ""
-description: "meta description"
-date: 2022-04-04T05:00:00Z
-image: "/images/posts/04.jpg"
-categories: ["photography"]
-tags: ["tips", "photography"]
+title: "蟹座"
+meta_title: "蟹座の性格と特徴について"
+description: "蟹座の基本的な性格、家族への愛情、直感力について詳しく解説します"
+date: 2025-01-09T05:00:00Z
+image: "/images/zodiac/seiza04_kani.png"
+categories: ["週刊占い"]
+tags: ["蟹座", "Cancer", "星座占い"]
 draft: false
 ---
 
-A balloon is a flexible bag that can be inflated with a gas, such as helium, hydrogen, nitrous oxide, oxygen, and air. For special tasks, balloons can be filled with smoke, liquid water, granular media, or light sources.
+蟹座（6月21日〜7月22日）は、水のエレメントに属し、感情豊かで直感力に優れた星座です。
 
-Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo vel ad consectetur ut aperiam. Itaque eligendi natus aperiam? Excepturi repellendus consequatur quibusdam optio expedita praesentium est adipisci dolorem ut eius!
+蟹座の人は家族や親しい人を大切にする愛情深い性格で、安心できる環境を作ることを重視します。記憶力が良く、過去の経験や思い出を大切にする傾向があります。
 
-### Creative Design
+## 蟹座の基本的な性格
 
-Nam ut rutrum ex, venenatis sollicitudin urna. Aliquam erat volutpat. Integer eu ipsum sem. Ut bibendum lacus vestibulum maximus suscipit. Quisque vitae nibh iaculis neque blandit euismod.
+蟹座の人は思いやりがあり、相手の気持ちを察することが得意です。感受性が豊かで、芸術的な才能を持つ人も多いでしょう。
 
-> Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo vel ad consectetur ut aperiam. Itaque eligendi natus aperiam? Excepturi repellendus consequatur quibusdam optio expedita praesentium est adipisci dolorem ut eius!
+> 「家族の絆こそが人生の宝物」という価値観を持っています。
 
-Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo vel ad consectetur ut aperiam. Itaque eligendi natus aperiam? Excepturi repellendus consequatur quibusdam optio expedita praesentium est adipisci dolorem ut eius!
+保守的な面もありますが、それは大切なものを守りたいという強い愛情の表れです。時として感情的になりやすいですが、それは深い愛情を持って人と接している証拠でもあります。

@@ -1,0 +1,20 @@
+---
+import Base from "@/layouts/Base.astro";
+import Posts from "@/layouts/Posts.astro";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { sortByDate } from "@/lib/utils/sortFunctions";
+import taxonomyFilter from "@/lib/utils/taxonomyFilter";
+
+const posts = await getSinglePage("posts");
+const semiAnnualPosts = taxonomyFilter(posts, "categories", "半期占い");
+const sortedPosts = sortByDate(semiAnnualPosts);
+---
+
+<Base title="半期占い">
+  <section class="section">
+    <div class="container">
+      <h1 class="h2 page-heading mb-16 text-center">半期占い</h1>
+      <Posts posts={sortedPosts} className="mb-16" fluid={false} />
+    </div>
+  </section>
+</Base> 

@@ -1,22 +1,22 @@
 ---
-title: "The standard Lorem Ipsum passage, used since the 1500s"
-meta_title: ""
-description: "meta description"
-date: 2022-04-02T05:00:00Z
-image: "/images/posts/02.jpg"
-categories: ["technology"]
-tags: ["lorem", "ipsum"]
+title: "牡牛座"
+meta_title: "牡牛座の性格と特徴について"
+description: "牡牛座の基本的な性格、恋愛傾向、金運について詳しく解説します"
+date: 2025-01-11T05:00:00Z
+image: "/images/zodiac/seiza02_oushi.png"
+categories: ["週刊占い"]
+tags: ["牡牛座", "Taurus", "星座占い"]
 draft: false
 ---
 
-Nemo vel ad consectetur namut rutrum ex, venenatis sollicitudin urna. Aliquam erat volutpat. Integer eu ipsum sem. Ut bibendum lacus vestibulum maximus suscipit. Quisque vitae nibh iaculis neque blandit euismod.
+牡牛座（4月20日〜5月20日）は、地のエレメントに属し、安定性と持続力を重視する星座です。
 
-Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo vel ad consectetur ut aperiam. Itaque eligendi natus aperiam? Excepturi repellendus consequatur quibusdam optio expedita praesentium est adipisci dolorem ut eius!
+牡牛座の人は忍耐強く、一度決めたことは最後までやり遂げる意志の強さを持っています。また、美しいものや質の良いものを愛し、五感を通じて人生を楽しむことを大切にします。
 
-## Creative Design
+## 牡牛座の基本的な性格
 
-Nam ut rutrum ex, venenatis sollicitudin urna. Aliquam erat volutpat. Integer eu ipsum sem. Ut bibendum lacus vestibulum maximus suscipit. Quisque vitae nibh iaculis neque blandit euismod.
+牡牛座の人は現実的で安定志向が強く、急激な変化よりもゆっくりとした着実な成長を好みます。信頼性が高く、周りの人から頼りにされることが多いでしょう。
 
-> Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo vel ad consectetur ut aperiam. Itaque eligendi natus aperiam? Excepturi repellendus consequatur quibusdam optio expedita praesentium est adipisci dolorem ut eius!
+> 「ゆっくりでも確実に」が牡牛座のモットーです。
 
-Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo vel ad consectetur ut aperiam. Itaque eligendi natus aperiam? Excepturi repellendus consequatur quibusdam optio expedita praesentium est adipisci dolorem ut eius!
+食べることや快適な環境を愛し、物質的な豊かさを求める傾向があります。この特性により、経済的な安定を築くのが得意な星座でもあります。

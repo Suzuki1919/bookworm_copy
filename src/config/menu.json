@@ -5,35 +5,12 @@
       "url": "/"
     },
     {
-      "name": "About",
-      "url": "/about"
+      "name": "週刊占い",
+      "url": "/weekly"
     },
     {
-      "name": "Contact",
-      "url": "/contact"
-    },
-    {
-      "name": "Pages",
-      "url": "",
-      "hasChildren": true,
-      "children": [
-        {
-          "name": "Categories",
-          "url": "/categories"
-        },
-        {
-          "name": "Tags",
-          "url": "/tags"
-        },
-        {
-          "name": "Elements",
-          "url": "/elements"
-        },
-        {
-          "name": "Privacy Policy",
-          "url": "/privacy-policy"
-        }
-      ]
+      "name": "半期占い",
+      "url": "/semi-annual"
     }
   ],
   "footer": [

@@ -1,7 +1,5 @@
 ---
-import config from "@/config/config.json";
 import Base from "@/layouts/Base.astro";
-import Pagination from "@/layouts/components/Pagination.astro";
 import Posts from "@/layouts/Posts.astro";
 import { getSinglePage } from "@/lib/contentParser.astro";
 import { sortByDate } from "@/lib/utils/sortFunctions";
@@ -10,15 +8,13 @@ import taxonomyFilter from "@/lib/utils/taxonomyFilter";
 const posts = await getSinglePage("posts");
 const weeklyPosts = taxonomyFilter(posts, "categories", "週刊占い");
 const sortedPosts = sortByDate(weeklyPosts);
-const totalPages = Math.ceil(weeklyPosts.length / config.settings.pagination);
-const currentPosts = sortedPosts.slice(0, config.settings.pagination);
 ---
 
-<Base>
+<Base title="週刊占い">
   <section class="section">
     <div class="container">
-      <Posts posts={currentPosts} className="mb-16" fluid={false} />
-      <Pagination currentPage={1} totalPages={totalPages} />
+      <h1 class="h2 page-heading mb-16 text-center">週刊占い</h1>
+      <Posts posts={sortedPosts} className="mb-16" fluid={false} />
     </div>
   </section>
-</Base>
+</Base> 

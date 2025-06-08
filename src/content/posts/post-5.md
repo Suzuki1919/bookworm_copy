@@ -1,22 +1,22 @@
 ---
-title: "Professional Web Developers Workflow and Discipline"
-meta_title: ""
-description: "meta description"
-date: 2022-04-05T05:00:00Z
-image: "/images/posts/05.jpg"
-categories: ["technology"]
-tags: ["web", "development"]
+title: "獅子座"
+meta_title: "獅子座の性格と特徴について"
+description: "獅子座の基本的な性格、リーダーシップ、創造性について詳しく解説します"
+date: 2025-01-08T05:00:00Z
+image: "/images/zodiac/seiza05_shishi.png"
+categories: ["週刊占い"]
+tags: ["獅子座", "Leo", "星座占い"]
 draft: false
 ---
 
-A banana is an elongated, edible fruit – botanically a berry – produced by several kinds of large herbaceous flowering plants in the genus Musa. In some countries, bananas used for cooking may be called "plantains", distinguishing them from dessert bananas.
+獅子座（7月23日〜8月22日）は、火のエレメントに属し、堂々とした威厳と創造力を持つ星座です。
 
-Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo vel ad consectetur ut aperiam. Itaque eligendi natus aperiam? Excepturi repellendus consequatur quibusdam optio expedita praesentium est adipisci dolorem ut eius!
+獅子座の人は生まれながらの王者の風格を持ち、人を魅了する華やかさと温かい心を併せ持っています。自信に満ち、困難な状況でも堂々と立ち向かう勇気を持っています。
 
-### Creative Design
+## 獅子座の基本的な性格
 
-Nam ut rutrum ex, venenatis sollicitudin urna. Aliquam erat volutpat. Integer eu ipsum sem. Ut bibendum lacus vestibulum maximus suscipit. Quisque vitae nibh iaculis neque blandit euismod.
+獅子座の人は表現力が豊かで、創造的な活動を好みます。リーダーシップを発揮し、周りの人を明るく元気にする力を持っています。
 
-> Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo vel ad consectetur ut aperiam. Itaque eligendi natus aperiam? Excepturi repellendus consequatur quibusdam optio expedita praesentium est adipisci dolorem ut eius!
+> 「人生は舞台、自分が主役」という気概で毎日を過ごしています。
 
-Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo vel ad consectetur ut aperiam. Itaque eligendi natus aperiam? Excepturi repellendus consequatur quibusdam optio expedita praesentium est adipisci dolorem ut eius!
+プライドが高く、認められることを重視しますが、それは向上心の表れでもあります。寛大で面倒見が良く、多くの人から愛される魅力的な星座です。
