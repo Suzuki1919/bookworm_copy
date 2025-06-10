@@ -6,6 +6,7 @@ import { sortByDate } from "@/lib/utils/sortFunctions";
 import taxonomyFilter from "@/lib/utils/taxonomyFilter";
 import social from "@/config/social.json";
 import { Image } from "astro:assets";
+import SocialWithImages from "@/layouts/components/SocialWithImages.astro";
 
 const posts = await getSinglePage("posts");
 const semiAnnualPosts = taxonomyFilter(posts, "categories", "2025上半期");
@@ -80,7 +81,7 @@ const sortedPosts = sortByDate(semiAnnualPosts);
       <!-- ソーシャルメディアリンク -->
       <div class="text-center mb-16">
         <p class="text-lg font-semibold mb-4">フォローしてね！</p>
-        <Social source={social} className="social-icons-simple justify-center" />
+        <SocialWithImages source={social} className="flex justify-center space-x-2" />
       </div>
     </div>
   </section>

@@ -1,0 +1,93 @@
+---
+const { source, className } = Astro.props;
+import { Image } from "astro:assets";
+
+const { facebook, twitter, instagram, line } = source;
+---
+
+<ul class={className}>
+  {
+    facebook && (
+      <li class="inline-block">
+        <a
+          aria-label="facebook"
+          href={facebook}
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          class="block p-2 transition hover:opacity-75"
+        >
+          <Image
+            src="/images/social/facebook.png"
+            alt="Facebook"
+            width={32}
+            height={32}
+            class="w-8 h-8"
+          />
+        </a>
+      </li>
+    )
+  }
+  {
+    instagram && (
+      <li class="inline-block">
+        <a
+          aria-label="instagram"
+          href={instagram}
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          class="block p-2 transition hover:opacity-75"
+        >
+          <Image
+            src="/images/social/instagram.png"
+            alt="Instagram"
+            width={32}
+            height={32}
+            class="w-8 h-8"
+          />
+        </a>
+      </li>
+    )
+  }
+  {
+    twitter && (
+      <li class="inline-block">
+        <a
+          aria-label="twitter"
+          href={twitter}
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          class="block p-2 transition hover:opacity-75"
+        >
+          <Image
+            src="/images/social/x.png"
+            alt="X (Twitter)"
+            width={32}
+            height={32}
+            class="w-8 h-8"
+          />
+        </a>
+      </li>
+    )
+  }
+  {
+    line && (
+      <li class="inline-block">
+        <a
+          aria-label="line"
+          href={line}
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          class="block p-2 transition hover:opacity-75"
+        >
+          <Image
+            src="/images/social/line.png"
+            alt="LINE"
+            width={32}
+            height={32}
+            class="w-8 h-8"
+          />
+        </a>
+      </li>
+    )
+  }
+</ul> 

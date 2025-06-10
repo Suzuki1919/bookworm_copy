@@ -1,6 +1,6 @@
 ---
 import Base from "@/layouts/Base.astro";
-import Social from "@/components/Social.astro";
+import SocialWithImages from "@/layouts/components/SocialWithImages.astro";
 import social from "@/config/social.json";
 import { Image } from "astro:assets";
 
@@ -71,7 +71,7 @@ const semiAnnualPeriods = [
       <!-- ソーシャルメディアリンク -->
       <div class="text-center mt-16 mb-16">
         <p class="text-lg font-semibold mb-4">フォローしてね！</p>
-        <Social source={social} className="social-icons-simple justify-center" />
+        <SocialWithImages source={social} className="flex justify-center space-x-2" />
       </div>
     </div>
   </section>

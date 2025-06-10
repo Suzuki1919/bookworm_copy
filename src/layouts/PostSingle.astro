@@ -1,6 +1,5 @@
 ---
-import Share from "@/components/Share.astro";
-import Social from "@/components/Social.astro";
+import SocialWithImages from "@/layouts/components/SocialWithImages.astro";
 import SimilarPosts from "@/components/SimilarPosts.astro";
 import { getSinglePage } from "@/lib/contentParser.astro";
 import social from "@/config/social.json";
@@ -44,19 +43,11 @@ const { title, description, categories, image, date, tags } =
         <div class="content mb-16 text-left">
           <Content />
         </div>
-        <div class="flex flex-wrap items-center justify-end">
-          <Share
-            className="social-share mb-4"
-            title={title}
-            description={description}
-            slug={post.id}
-          />
-        </div>
         
         <!-- ソーシャルメディアリンク -->
         <div class="text-center mt-8 mb-8">
           <p class="text-lg font-semibold mb-4">フォローしてね！</p>
-          <Social source={social} className="social-icons-simple justify-center" />
+          <SocialWithImages source={social} className="flex justify-center space-x-2" />
         </div>
       </div>
     </article>

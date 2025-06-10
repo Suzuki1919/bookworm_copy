@@ -11,6 +11,10 @@
     {
       "name": "半期占い",
       "url": "/semi-annual"
+    },
+    {
+      "name": "お知らせ",
+      "url": "/notices"
     }
   ],
   "footer": [
