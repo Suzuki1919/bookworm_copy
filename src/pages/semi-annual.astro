@@ -1,20 +1,78 @@
 ---
 import Base from "@/layouts/Base.astro";
-import Posts from "@/layouts/Posts.astro";
-import { getSinglePage } from "@/lib/contentParser.astro";
-import { sortByDate } from "@/lib/utils/sortFunctions";
-import taxonomyFilter from "@/lib/utils/taxonomyFilter";
+import Social from "@/components/Social.astro";
+import social from "@/config/social.json";
+import { Image } from "astro:assets";
 
-const posts = await getSinglePage("posts");
-const semiAnnualPosts = taxonomyFilter(posts, "categories", "半期占い");
-const sortedPosts = sortByDate(semiAnnualPosts);
+// 半期占いの期間データ（年数が新しい順）
+const semiAnnualPeriods = [
+  {
+    title: "2026年上半期",
+    description: "1月〜6月の運勢",
+    url: "/semi-annual/2026-first-half", 
+    image: "/images/posts/04.jpg"
+  },
+  {
+    title: "2025年下半期",
+    description: "7月〜12月の運勢", 
+    url: "/semi-annual/2025-second-half",
+    image: "/images/posts/03.jpg"
+  },
+  {
+    title: "2025年上半期", 
+    description: "1月〜6月の運勢",
+    url: "/semi-annual/2025-first-half",
+    image: "/images/posts/02.jpg"
+  },
+  {
+    title: "2024年下半期",
+    description: "7月〜12月の運勢",
+    url: "/semi-annual/2024-second-half",
+    image: "/images/posts/01.jpg"
+  }
+];
 ---
 
 <Base title="半期占い">
   <section class="section">
     <div class="container">
       <h1 class="h2 page-heading mb-16 text-center">半期占い</h1>
-      <Posts posts={sortedPosts} className="mb-16" fluid={false} />
+      
+      <div class="text-center mb-12">
+        <p class="text-lg text-gray-600">期間を選んで半期占いをチェックしよう</p>
+      </div>
+      
+      <!-- 期間選択リスト（縦一列） -->
+      <div class="row gy-20 justify-center">
+        {
+          semiAnnualPeriods.map((period) => (
+            <div class="col-12 max-w-2xl mx-auto">
+              <a
+                href={period.url}
+                class="block rounded-lg overflow-hidden hover:scale-[1.02] transition duration-300 group shadow-lg"
+              >
+                <Image
+                  src={period.image}
+                  alt={period.title}
+                  width={600}
+                  height={300}
+                  class="w-full group-hover:opacity-90 transition duration-300"
+                />
+                <div class="p-6 bg-white">
+                  <h2 class="text-xl font-semibold text-center mb-2">{period.title}</h2>
+                  <p class="text-center text-gray-600">{period.description}</p>
+                </div>
+              </a>
+            </div>
+          ))
+        }
+      </div>
+      
+      <!-- ソーシャルメディアリンク -->
+      <div class="text-center mt-16 mb-16">
+        <p class="text-lg font-semibold mb-4">フォローしてね！</p>
+        <Social source={social} className="social-icons-simple justify-center" />
+      </div>
     </div>
   </section>
 </Base> 

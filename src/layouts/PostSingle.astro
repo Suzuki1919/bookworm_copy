@@ -1,7 +1,9 @@
 ---
 import Share from "@/components/Share.astro";
+import Social from "@/components/Social.astro";
 import SimilarPosts from "@/components/SimilarPosts.astro";
 import { getSinglePage } from "@/lib/contentParser.astro";
+import social from "@/config/social.json";
 import dateFormat from "@/lib/utils/dateFormat";
 import similerItems from "@/lib/utils/similarItems";
 import { humanize, markdownify, slugify } from "@/lib/utils/textConverter";
@@ -49,6 +51,12 @@ const { title, description, categories, image, date, tags } =
             description={description}
             slug={post.id}
           />
+        </div>
+        
+        <!-- ソーシャルメディアリンク -->
+        <div class="text-center mt-8 mb-8">
+          <p class="text-lg font-semibold mb-4">フォローしてね！</p>
+          <Social source={social} className="social-icons-simple justify-center" />
         </div>
       </div>
     </article>

@@ -1,0 +1,87 @@
+---
+import Base from "@/layouts/Base.astro";
+import Social from "@/components/Social.astro";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { sortByDate } from "@/lib/utils/sortFunctions";
+import taxonomyFilter from "@/lib/utils/taxonomyFilter";
+import social from "@/config/social.json";
+import { Image } from "astro:assets";
+
+const posts = await getSinglePage("posts");
+const semiAnnualPosts = taxonomyFilter(posts, "categories", "2026上半期");
+const sortedPosts = sortByDate(semiAnnualPosts);
+---
+
+<Base title="2026年上半期占い">
+  <section class="section">
+    <div class="container">
+      <div class="mb-8">
+        <a href="/semi-annual" class="text-primary hover:underline">← 半期占い一覧に戻る</a>
+      </div>
+      
+      <h1 class="h2 page-heading mb-4 text-center">2026年上半期占い</h1>
+      <div class="text-center mb-12">
+        <p class="text-lg text-gray-600">1月〜6月の運勢をチェック</p>
+      </div>
+      
+      {sortedPosts.length > 0 ? (
+        <!-- 12星座の半期占い記事グリッド -->
+        <div class="row gy-5 gx-4 mb-16">
+          {
+            sortedPosts.map((post) => (
+              <div class="col-12 sm:col-6 lg:col-3">
+                <a
+                  href={`/${post.id}`}
+                  class="block rounded-lg overflow-hidden hover:scale-[1.02] transition duration-300 group"
+                >
+                  {post.data.image && (
+                    <Image
+                      src={post.data.image}
+                      alt={post.data.title}
+                      width={300}
+                      height={200}
+                      class="w-full group-hover:opacity-90 transition duration-300"
+                    />
+                  )}
+                  <div class="p-4 bg-light">
+                    <h3 class="text-lg font-semibold text-center">{post.data.title}</h3>
+                  </div>
+                </a>
+              </div>
+            ))
+          }
+        </div>
+      ) : (
+        <!-- 準備中メッセージ -->
+        <div class="text-center py-16">
+          <div class="max-w-md mx-auto">
+            <Image
+              src="/images/posts/04.jpg"
+              alt="準備中"
+              width={300}
+              height={200}
+              class="rounded-lg mb-8 mx-auto"
+            />
+            <h2 class="text-2xl font-semibold mb-4">準備中</h2>
+            <p class="text-gray-600 mb-6">
+              2026年上半期の占いコンテンツは現在準備中です。<br>
+              近日公開予定ですので、しばらくお待ちください。
+            </p>
+            <a 
+              href="/semi-annual/2024-second-half" 
+              class="btn btn-primary"
+            >
+              2024年下半期占いを見る
+            </a>
+          </div>
+        </div>
+      )}
+      
+      <!-- ソーシャルメディアリンク -->
+      <div class="text-center mb-16">
+        <p class="text-lg font-semibold mb-4">フォローしてね！</p>
+        <Social source={social} className="social-icons-simple justify-center" />
+      </div>
+    </div>
+  </section>
+</Base> 

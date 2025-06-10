@@ -4,7 +4,7 @@ meta_title: "山羊座 2024年下半期の運勢について"
 description: "山羊座の2024年下半期における仕事運、恋愛運、金運、健康運について詳しく解説します"
 date: 2025-06-03T05:00:00Z
 image: "/images/zodiac/seiza10_yagi.png"
-categories: ["半期占い"]
+categories: ["2024下半期"]
 tags: ["山羊座", "半期占い", "2024年下半期"]
 draft: false
 ---
