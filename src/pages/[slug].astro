@@ -1,0 +1,78 @@
+---
+import Base from "@/layouts/Base.astro";
+import SocialWithImages from "@/layouts/components/SocialWithImages.astro";
+import { getSinglePageFromMicroCMS, getPostByIdFromMicroCMS } from "@/lib/contentParser.microcms";
+import social from "@/config/social.json";
+import { Image } from "astro:assets";
+
+export async function getStaticPaths() {
+  try {
+    // microCMSから全記事を取得
+    const posts = await getSinglePageFromMicroCMS("posts");
+    
+    return posts.map((post) => ({
+      params: { slug: post.id },
+      props: { post },
+    }));
+  } catch (error) {
+    console.error('静的パス生成エラー:', error);
+    return [];
+  }
+}
+
+const { post } = Astro.props;
+
+// フォールバック：URLパラメータから記事を取得
+if (!post) {
+  const { slug } = Astro.params;
+  if (slug) {
+    const fetchedPost = await getPostByIdFromMicroCMS(slug);
+    if (!fetchedPost) {
+      return Astro.redirect('/404');
+    }
+  }
+}
+
+const { title, description, image, content } = post.data;
+---
+
+<Base title={title} meta_title={title} description={description}>
+  <section class="section">
+    <div class="container">
+      <article class="row justify-center">
+        <div class="md:col-10 text-center">
+          <h1 class="h2 mb-4">{title}</h1>
+          {description && (
+            <p class="text-lg text-gray-600 mb-8">{description}</p>
+          )}
+        </div>
+
+        <div class="col-12 mt-8 mb-2">
+          {image && (
+            <Image
+              src={image}
+              height={500}
+              width={1000}
+              alt={title}
+              class="rounded-lg mx-auto"
+            />
+          )}
+        </div>
+
+        <div class="md:col-10">
+          <div class="content mb-16 text-left">
+            {content && (
+              <div set:html={content} />
+            )}
+          </div>
+          
+          <!-- ソーシャルメディアリンク -->
+          <div class="text-center mt-8 mb-8">
+            <p class="text-lg font-semibold mb-4">フォローしてね！</p>
+            <SocialWithImages source={social} className="flex justify-center space-x-2" />
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+</Base> 
