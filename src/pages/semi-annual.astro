@@ -1,36 +1,87 @@
 ---
 import Base from "@/layouts/Base.astro";
+import Posts from "@/layouts/Posts.astro";
 import SocialWithImages from "@/layouts/components/SocialWithImages.astro";
+import { getSemiAnnualFortuneArticles } from "@/lib/microcms";
+import { getSinglePage } from "@/lib/contentParser.astro";
+import { sortByDate } from "@/lib/utils/sortFunctions";
+import taxonomyFilter from "@/lib/utils/taxonomyFilter";
 import social from "@/config/social.json";
+import cmsConfig from "@/config/cms.json";
 import { Image } from "astro:assets";
 
-// 半期占いの期間データ（年数が新しい順）
-const semiAnnualPeriods = [
-  {
-    title: "2026年上半期",
-    description: "1月〜6月の運勢",
-    url: "/semi-annual/2026-first-half", 
-    image: "/images/posts/04.jpg"
-  },
-  {
-    title: "2025年下半期",
-    description: "7月〜12月の運勢", 
-    url: "/semi-annual/2025-second-half",
-    image: "/images/posts/03.jpg"
-  },
-  {
-    title: "2025年上半期", 
-    description: "1月〜6月の運勢",
-    url: "/semi-annual/2025-first-half",
-    image: "/images/posts/02.jpg"
-  },
-  {
-    title: "2024年下半期",
-    description: "7月〜12月の運勢",
-    url: "/semi-annual/2024-second-half",
-    image: "/images/posts/01.jpg"
-  }
+// HTMLタグを除去する関数
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, '').trim();
+}
+
+// 星座の順序を定義
+const zodiacOrder = [
+  '牡羊座', '牡牛座', '双子座', '蟹座', '獅子座', '乙女座',
+  '天秤座', '蠍座', '射手座', '山羊座', '水瓶座', '魚座'
 ];
+
+// 星座順にソートする関数
+function sortByZodiacOrder(posts: any[]) {
+  return posts.sort((a, b) => {
+    const indexA = zodiacOrder.indexOf(a.data.title);
+    const indexB = zodiacOrder.indexOf(b.data.title);
+    
+    // 星座名が見つからない場合は最後に配置
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    
+    return indexA - indexB;
+  });
+}
+
+let semiAnnualPosts: any[] = [];
+
+try {
+  if (cmsConfig.useMicroCMS) {
+    // microCMSから半期占い記事を取得
+    const fortuneResponse = await getSemiAnnualFortuneArticles();
+    
+    // microCMSのレスポンスをPost形式に変換
+    semiAnnualPosts = fortuneResponse.contents.map((post: any) => {
+      const cleanContent = post.content ? stripHtml(post.content) : '';
+      const title = post.title || '占い記事';
+      const description = cleanContent.length > 100 ? cleanContent.substring(0, 100) + '...' : cleanContent;
+      
+      return {
+        id: post.id,
+        slug: post.id,
+        data: {
+          title: title,
+          description: description,
+          date: new Date(post.publishedAt),
+          image: '/images/posts/01.jpg',
+          categories: ['半期占い'],
+          content: post.content || '',
+        },
+      };
+    });
+
+    // 星座順にソート
+    semiAnnualPosts = sortByZodiacOrder(semiAnnualPosts);
+  } else {
+    // ローカルファイルから取得（フォールバック）
+    const posts = await getSinglePage("posts");
+    const filteredPosts = taxonomyFilter(posts, "categories", "2024下半期");
+    semiAnnualPosts = sortByDate(filteredPosts);
+  }
+} catch (error) {
+  console.error('半期占い記事の取得に失敗しました:', error);
+  // エラー時はローカルファイルにフォールバック
+  try {
+    const posts = await getSinglePage("posts");
+    const filteredPosts = taxonomyFilter(posts, "categories", "2024下半期");
+    semiAnnualPosts = sortByDate(filteredPosts);
+  } catch (fallbackError) {
+    console.error('フォールバックも失敗しました:', fallbackError);
+    semiAnnualPosts = [];
+  }
+}
 ---
 
 <Base title="半期占い">
@@ -39,33 +90,26 @@ const semiAnnualPeriods = [
       <h1 class="h2 page-heading mb-16 text-center">半期占い</h1>
       
       <div class="text-center mb-12">
-        <p class="text-lg text-gray-600">期間を選んで半期占いをチェックしよう</p>
+        <p class="text-lg text-gray-600">2024年下半期の運勢をチェックしよう</p>
       </div>
       
-      <!-- 期間選択リスト（縦一列） -->
-      <div class="row gy-20 justify-center">
-        {
-          semiAnnualPeriods.map((period) => (
-            <div class="col-12 max-w-2xl mx-auto">
-              <a
-                href={period.url}
-                class="block rounded-lg overflow-hidden hover:scale-[1.02] transition duration-300 group shadow-lg"
-              >
-                <Image
-                  src={period.image}
-                  alt={period.title}
-                  width={600}
-                  height={300}
-                  class="w-full group-hover:opacity-90 transition duration-300"
-                />
-                <div class="p-6 bg-white">
-                  <h2 class="text-xl font-semibold text-center mb-2">{period.title}</h2>
-                  <p class="text-center text-gray-600">{period.description}</p>
-                </div>
-              </a>
-            </div>
-          ))
-        }
+      <!-- 半期占いセクション -->
+      <div class="border-2 border-gray-200 rounded-lg p-6 mb-16">
+        <div class="text-center mb-6">
+          <h2 class="text-2xl font-semibold mb-2">2024年下半期の運勢</h2>
+          <p class="text-lg text-gray-600">7月〜12月の運勢</p>
+        </div>
+        
+        {semiAnnualPosts.length > 0 ? (
+          <Posts posts={semiAnnualPosts} className="" fluid={false} />
+        ) : (
+          <div class="text-center py-8">
+            <p class="text-gray-600">半期占いの記事を準備中です。しばらくお待ちください。</p>
+            <p class="text-sm text-gray-500 mt-2">
+              microCMSでcategoryフィールドを設定し、半期占いの記事を作成してください。
+            </p>
+          </div>
+        )}
       </div>
       
       <!-- ソーシャルメディアリンク -->

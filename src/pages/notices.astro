@@ -2,14 +2,63 @@
 import Base from "@/layouts/Base.astro";
 import Posts from "@/layouts/Posts.astro";
 import SocialWithImages from "@/layouts/components/SocialWithImages.astro";
+import { getNoticeArticles } from "@/lib/microcms";
 import { getSinglePage } from "@/lib/contentParser.astro";
 import { sortByDate } from "@/lib/utils/sortFunctions";
 import taxonomyFilter from "@/lib/utils/taxonomyFilter";
 import social from "@/config/social.json";
+import cmsConfig from "@/config/cms.json";
 
-const posts = await getSinglePage("posts");
-const noticePosts = taxonomyFilter(posts, "categories", "お知らせ");
-const sortedPosts = sortByDate(noticePosts);
+// HTMLタグを除去する関数
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, '').trim();
+}
+
+let noticePosts: any[] = [];
+
+try {
+  if (cmsConfig.useMicroCMS) {
+    // microCMSからお知らせ記事を取得
+    const noticeResponse = await getNoticeArticles(10);
+    
+    // microCMSのレスポンスをPost形式に変換
+    noticePosts = noticeResponse.contents.map((post: any) => {
+      const cleanContent = post.content ? stripHtml(post.content) : '';
+      const description = post.description || (cleanContent.length > 100 ? cleanContent.substring(0, 100) + '...' : cleanContent);
+      
+      const convertedPost = {
+        id: post.id,
+        slug: post.id,
+        data: {
+          title: post.title || 'お知らせ',
+          description: description,
+          date: new Date(post.publishedAt),
+          image: post.image?.url || '/images/posts/01.jpg',
+          categories: ['お知らせ'],
+          content: post.content || '',
+        },
+      };
+      
+      return convertedPost;
+    });
+  } else {
+    // ローカルファイルから取得（フォールバック）
+    const posts = await getSinglePage("posts");
+    const filteredPosts = taxonomyFilter(posts, "categories", "お知らせ");
+    noticePosts = sortByDate(filteredPosts);
+  }
+} catch (error) {
+  console.error('お知らせ記事の取得に失敗しました:', error);
+  // エラー時はローカルファイルにフォールバック
+  try {
+    const posts = await getSinglePage("posts");
+    const filteredPosts = taxonomyFilter(posts, "categories", "お知らせ");
+    noticePosts = sortByDate(filteredPosts);
+  } catch (fallbackError) {
+    console.error('フォールバックも失敗しました:', fallbackError);
+    noticePosts = [];
+  }
+}
 ---
 
 <Base title="お知らせ">
@@ -17,15 +66,11 @@ const sortedPosts = sortByDate(noticePosts);
     <div class="container">
       <h1 class="h2 page-heading mb-16 text-center">お知らせ</h1>
       
-      <div class="text-center mb-12">
-        <p class="text-lg text-gray-600">サイトの最新情報をお届けします</p>
-      </div>
-      
       <!-- お知らせ記事一覧 -->
-      {sortedPosts.length > 0 ? (
+      {noticePosts.length > 0 ? (
         <div class="row gy-5 gx-4 mb-16">
           {
-            sortedPosts.map((post) => (
+            noticePosts.map((post) => (
               <div class="col-12 md:col-6">
                 <a
                   href={`/${post.id}`}

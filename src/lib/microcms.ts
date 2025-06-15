@@ -17,27 +17,22 @@ export const client = createClient({
 // 占い記事の型定義
 export interface FortunePost {
   id: string;
-  title: string;
-  content: string;
-  description?: string;
-  image?: {
-    url: string;
-    height: number;
-    width: number;
-  };
-  zodiacSign: string; // 星座名
-  category: 'weekly' | 'semi-annual'; // 週刊 or 半期
-  publishedAt: string;
+  title?: string;
+  content?: string;
+  blog?: string;
   createdAt: string;
   updatedAt: string;
+  publishedAt: string;
   revisedAt: string;
+  category?: string;
+  zodiacSign?: string;
 }
 
 // お知らせ記事の型定義
 export interface NoticePost {
   id: string;
-  title: string;
-  content: string;
+  title?: string;
+  content?: string;
   description?: string;
   image?: {
     url: string;
@@ -58,37 +53,102 @@ export interface MicroCMSResponse<T> {
   limit: number;
 }
 
-// 占い記事を取得する関数
+// 占い記事を取得する関数（カテゴリフィルタ対応）
 export const getFortuneArticles = async (
-  category?: 'weekly' | 'semi-annual',
+  category?: string,
   zodiacSign?: string,
   limit: number = 50
 ): Promise<MicroCMSResponse<FortunePost>> => {
   try {
-    const filters: string[] = [];
+    console.log('Fetching fortune articles...');
+    
+    let filters = '';
+    const filterConditions = [];
     
     if (category) {
-      filters.push(`category[equals]${category}`);
+      filterConditions.push(`category[contains]${category}`);
     }
     
     if (zodiacSign) {
-      filters.push(`zodiacSign[equals]${zodiacSign}`);
+      filterConditions.push(`zodiacSign[equals]${zodiacSign}`);
     }
     
-    const filterString = filters.length > 0 ? filters.join('[and]') : undefined;
+    if (filterConditions.length > 0) {
+      filters = filterConditions.join('[and]');
+    }
+    
+    const queries: any = {
+      limit,
+      orders: '-publishedAt',
+    };
+    
+    if (filters) {
+      queries.filters = filters;
+      console.log('Using filters:', filters);
+    }
+    
+    const response = await client.get({
+      endpoint: 'fortune-articles',
+      queries,
+    });
+    
+    console.log('Fortune articles fetched successfully:', response);
+    return response;
+  } catch (error) {
+    console.error('占い記事の取得に失敗しました:', error);
+    throw error;
+  }
+};
+
+// デバッグ用：全ての記事を取得する関数
+export const getAllFortuneArticles = async (
+  limit: number = 50
+): Promise<MicroCMSResponse<FortunePost>> => {
+  try {
+    console.log('Fetching ALL fortune articles for debugging...');
     
     const response = await client.get({
       endpoint: 'fortune-articles',
       queries: {
         limit,
         orders: '-publishedAt',
-        filters: filterString,
       },
     });
     
+    console.log('ALL Fortune articles fetched successfully:', response);
     return response;
   } catch (error) {
-    console.error('占い記事の取得に失敗しました:', error);
+    console.error('全占い記事の取得に失敗しました:', error);
+    throw error;
+  }
+};
+
+// 週刊占い記事を取得する関数
+export const getWeeklyFortuneArticles = async (
+  limit: number = 50
+): Promise<MicroCMSResponse<FortunePost>> => {
+  return getFortuneArticles('weekly', undefined, limit);
+};
+
+// 半期占い記事を取得する関数
+export const getSemiAnnualFortuneArticles = async (
+  limit: number = 50
+): Promise<MicroCMSResponse<FortunePost>> => {
+  try {
+    console.log('Fetching semi-annual fortune articles...');
+    
+    const response = await client.get({
+      endpoint: 'semi-annual-articles',
+      queries: {
+        limit,
+        orders: '-publishedAt',
+      },
+    });
+    
+    console.log('Semi-annual fortune articles fetched successfully:', response);
+    return response;
+  } catch (error) {
+    console.error('半期占い記事の取得に失敗しました:', error);
     throw error;
   }
 };
@@ -98,14 +158,17 @@ export const getNoticeArticles = async (
   limit: number = 10
 ): Promise<MicroCMSResponse<NoticePost>> => {
   try {
+    console.log('Fetching notice articles...');
+    
     const response = await client.get({
-      endpoint: 'notice-articles',
+      endpoint: 'notices',
       queries: {
         limit,
         orders: '-publishedAt',
       },
     });
     
+    console.log('Notice articles fetched successfully:', response);
     return response;
   } catch (error) {
     console.error('お知らせ記事の取得に失敗しました:', error);
@@ -113,17 +176,38 @@ export const getNoticeArticles = async (
   }
 };
 
-// 特定の記事を取得する関数
+// 特定の占い記事を取得する関数
 export const getFortuneArticleById = async (id: string): Promise<FortunePost> => {
   try {
+    console.log(`Fetching fortune article with ID: ${id}`);
+    
     const response = await client.get({
       endpoint: 'fortune-articles',
       contentId: id,
     });
     
+    console.log('Fortune article fetched successfully:', response);
     return response;
   } catch (error) {
-    console.error('記事の取得に失敗しました:', error);
+    console.error('占い記事の取得に失敗しました:', error);
+    throw error;
+  }
+};
+
+// 特定の半期占い記事を取得する関数
+export const getSemiAnnualFortuneArticleById = async (id: string): Promise<FortunePost> => {
+  try {
+    console.log(`Fetching semi-annual fortune article with ID: ${id}`);
+    
+    const response = await client.get({
+      endpoint: 'semi-annual-articles',
+      contentId: id,
+    });
+    
+    console.log('Semi-annual fortune article fetched successfully:', response);
+    return response;
+  } catch (error) {
+    console.error('半期占い記事の取得に失敗しました:', error);
     throw error;
   }
 };
@@ -131,11 +215,14 @@ export const getFortuneArticleById = async (id: string): Promise<FortunePost> =>
 // 特定のお知らせ記事を取得する関数
 export const getNoticeArticleById = async (id: string): Promise<NoticePost> => {
   try {
+    console.log(`Fetching notice article with ID: ${id}`);
+    
     const response = await client.get({
-      endpoint: 'notice-articles',
+      endpoint: 'notices',
       contentId: id,
     });
     
+    console.log('Notice article fetched successfully:', response);
     return response;
   } catch (error) {
     console.error('お知らせ記事の取得に失敗しました:', error);

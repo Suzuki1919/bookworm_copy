@@ -4,21 +4,115 @@ import Base from "@/layouts/Base.astro";
 import Pagination from "@/layouts/components/Pagination.astro";
 import Posts from "@/layouts/Posts.astro";
 import SocialWithImages from "@/layouts/components/SocialWithImages.astro";
+import { getWeeklyFortuneArticles, getNoticeArticles } from "@/lib/microcms";
 import { getSinglePage } from "@/lib/contentParser.astro";
 import { sortByDate } from "@/lib/utils/sortFunctions";
 import taxonomyFilter from "@/lib/utils/taxonomyFilter";
 import social from "@/config/social.json";
+import cmsConfig from "@/config/cms.json";
 import { Image } from "astro:assets";
 
-const posts = await getSinglePage("posts");
-const weeklyPosts = taxonomyFilter(posts, "categories", "週刊占い");
-const sortedPosts = sortByDate(weeklyPosts);
-const totalPages = Math.ceil(weeklyPosts.length / config.settings.pagination);
-const currentPosts = sortedPosts.slice(0, config.settings.pagination);
+// HTMLタグを除去する関数
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, '').trim();
+}
 
-// お知らせ記事を取得
-const noticePosts = taxonomyFilter(posts, "categories", "お知らせ");
-const sortedNoticePosts = sortByDate(noticePosts);
+// 星座の順序を定義
+const zodiacOrder = [
+  '牡羊座', '牡牛座', '双子座', '蟹座', '獅子座', '乙女座',
+  '天秤座', '蠍座', '射手座', '山羊座', '水瓶座', '魚座'
+];
+
+// 星座順にソートする関数
+function sortByZodiacOrder(posts: any[]) {
+  return posts.sort((a, b) => {
+    const indexA = zodiacOrder.indexOf(a.data.title);
+    const indexB = zodiacOrder.indexOf(b.data.title);
+    
+    // 星座名が見つからない場合は最後に配置
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    
+    return indexA - indexB;
+  });
+}
+
+let weeklyPosts: any[] = [];
+let noticePosts: any[] = [];
+
+try {
+  if (cmsConfig.useMicroCMS) {
+    // microCMSから週刊占い記事を取得
+    const fortuneResponse = await getWeeklyFortuneArticles();
+    weeklyPosts = fortuneResponse.contents.map((post: any) => {
+      const cleanContent = post.content ? stripHtml(post.content) : '';
+      const title = post.title || '占い記事';
+      const description = cleanContent.length > 100 ? cleanContent.substring(0, 100) + '...' : cleanContent;
+      
+      return {
+        id: post.id,
+        slug: post.id,
+        data: {
+          title: title,
+          description: description,
+          date: new Date(post.publishedAt),
+          image: '/images/posts/01.jpg',
+          categories: ['週刊占い'],
+          content: post.content || '',
+        },
+      };
+    });
+
+    // 星座順にソート
+    weeklyPosts = sortByZodiacOrder(weeklyPosts);
+
+    // microCMSからお知らせ記事を取得
+    const noticeResponse = await getNoticeArticles(5);
+    noticePosts = noticeResponse.contents.map((post: any) => {
+      const cleanContent = post.content ? stripHtml(post.content) : '';
+      const description = post.description || (cleanContent.length > 100 ? cleanContent.substring(0, 100) + '...' : cleanContent);
+      
+      return {
+        id: post.id,
+        slug: post.id,
+        data: {
+          title: post.title || 'お知らせ',
+          description: description,
+          date: new Date(post.publishedAt),
+          image: post.image?.url || '/images/posts/01.jpg',
+          categories: ['お知らせ'],
+          content: post.content || '',
+        },
+      };
+    });
+  } else {
+    // ローカルファイルから取得（フォールバック）
+    const posts = await getSinglePage("posts");
+    const weeklyFiltered = taxonomyFilter(posts, "categories", "週刊占い");
+    weeklyPosts = sortByDate(weeklyFiltered);
+    
+    const noticeFiltered = taxonomyFilter(posts, "categories", "お知らせ");
+    noticePosts = sortByDate(noticeFiltered);
+  }
+} catch (error) {
+  console.error('記事の取得に失敗しました:', error);
+  // エラー時はローカルファイルにフォールバック
+  try {
+    const posts = await getSinglePage("posts");
+    const weeklyFiltered = taxonomyFilter(posts, "categories", "週刊占い");
+    weeklyPosts = sortByDate(weeklyFiltered);
+    
+    const noticeFiltered = taxonomyFilter(posts, "categories", "お知らせ");
+    noticePosts = sortByDate(noticeFiltered);
+  } catch (fallbackError) {
+    console.error('フォールバックも失敗しました:', fallbackError);
+    weeklyPosts = [];
+    noticePosts = [];
+  }
+}
+
+const totalPages = Math.ceil(weeklyPosts.length / config.settings.pagination);
+const currentPosts = weeklyPosts.slice(0, config.settings.pagination);
 ---
 
 <Base>
@@ -30,7 +124,14 @@ const sortedNoticePosts = sortByDate(noticePosts);
           <h2 class="text-2xl font-semibold mb-2">今週の運勢は？</h2>
           <p class="text-lg text-gray-600">6月9日（月）〜6月15日（日）</p>
         </div>
-        <Posts posts={currentPosts} className="" fluid={false} />
+        
+        {currentPosts.length > 0 ? (
+          <Posts posts={currentPosts} className="" fluid={false} />
+        ) : (
+          <div class="text-center py-8">
+            <p class="text-gray-600">週刊占いの記事を準備中です。しばらくお待ちください。</p>
+          </div>
+        )}
       </div>
       
       <!-- 半期占いへのリンク -->
@@ -56,49 +157,36 @@ const sortedNoticePosts = sortByDate(noticePosts);
       </div>
       
       <!-- お知らせ記事リンク -->
-      <div class="mb-16">
-        <div class="text-center mb-8">
-          <h2 class="text-2xl font-semibold mb-4">最新のお知らせ</h2>
-          <p class="text-gray-600">サイトの最新情報をチェック</p>
-        </div>
-        <div class="max-w-2xl mx-auto">
-          {
-            sortedNoticePosts.slice(0, 3).map((post) => (
-              <div class="border-l-4 border-primary pl-4 py-3 mb-4 hover:bg-gray-50 transition duration-200">
-                <a href={`/${post.id}`} class="block">
-                  <h3 class="text-lg font-semibold text-primary hover:text-primary-dark transition duration-200 mb-1">
-                    {post.data.title}
-                  </h3>
-                  <p class="text-gray-600 text-sm mb-1">{post.data.description}</p>
-                  <p class="text-xs text-gray-500">
-                    {new Date(post.data.date).toLocaleDateString('ja-JP', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
+      {noticePosts.length > 0 && (
+        <div class="row justify-center mb-16">
+          <div class="col-12 md:col-8 lg:col-6">
+            <h2 class="text-2xl font-semibold text-center mb-6">最新のお知らせ</h2>
+            <div class="space-y-4">
+              {noticePosts.slice(0, 3).map((notice) => (
+                <a
+                  href={`/${notice.id}`}
+                  class="block p-4 bg-light rounded-lg hover:bg-gray-100 transition duration-300"
+                >
+                  <h3 class="font-semibold mb-2">{notice.data.title}</h3>
+                  <p class="text-sm text-gray-600">{notice.data.description}</p>
+                  <p class="text-xs text-gray-500 mt-2">
+                    {new Date(notice.data.date).toLocaleDateString('ja-JP')}
                   </p>
                 </a>
-              </div>
-            ))
-          }
-          <div class="text-center mt-6">
-            <a 
-              href="/notices" 
-              class="inline-block px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition duration-200"
-            >
-              お知らせ一覧を見る
-            </a>
+              ))}
+            </div>
+            <div class="text-center mt-6">
+              <a href="/notices" class="btn btn-primary">すべてのお知らせを見る</a>
+            </div>
           </div>
         </div>
-      </div>
+      )}
       
       <!-- ソーシャルメディアリンク -->
       <div class="text-center mb-16">
         <p class="text-lg font-semibold mb-4">フォローしてね！</p>
         <SocialWithImages source={social} className="flex justify-center space-x-2" />
       </div>
-      
-      <Pagination currentPage={1} totalPages={totalPages} />
     </div>
   </section>
 </Base>

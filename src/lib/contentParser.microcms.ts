@@ -1,4 +1,4 @@
-import { getFortuneArticles, getNoticeArticles, type FortunePost, type NoticePost } from './microcms';
+import { getFortuneArticles, getNoticeArticles, getSemiAnnualFortuneArticles, type FortunePost, type NoticePost } from './microcms';
 
 // 既存のPostインターフェースに合わせた型変換
 export interface Post {
@@ -59,20 +59,24 @@ export const getSinglePageFromMicroCMS = async (collection: string): Promise<Pos
       return [];
     }
 
-    // 並行して占い記事とお知らせ記事を取得
-    const [fortuneResponse, noticeResponse] = await Promise.all([
+    // 並行して占い記事、半期占い記事、お知らせ記事を取得
+    const [fortuneResponse, semiAnnualResponse, noticeResponse] = await Promise.all([
       getFortuneArticles(),
+      getSemiAnnualFortuneArticles(),
       getNoticeArticles(),
     ]);
 
     // 占い記事を変換
     const fortunePosts = fortuneResponse.contents.map(convertFortunePostToPost);
 
+    // 半期占い記事を変換
+    const semiAnnualPosts = semiAnnualResponse.contents.map(convertFortunePostToPost);
+
     // お知らせ記事を変換
     const noticePosts = noticeResponse.contents.map(convertNoticePostToPost);
 
     // 全ての記事を統合して返す
-    return [...fortunePosts, ...noticePosts];
+    return [...fortunePosts, ...semiAnnualPosts, ...noticePosts];
 
   } catch (error) {
     console.error('microCMSからのコンテンツ取得に失敗しました:', error);
@@ -90,14 +94,21 @@ export const getPostByIdFromMicroCMS = async (id: string): Promise<Post | null> 
       const fortunePost = await getFortuneArticleById(id);
       return convertFortunePostToPost(fortunePost);
     } catch (fortuneError) {
-      // 占い記事で見つからない場合、お知らせ記事として検索
+      // 占い記事で見つからない場合、半期占い記事として検索
       try {
-        const { getNoticeArticleById } = await import('./microcms');
-        const noticePost = await getNoticeArticleById(id);
-        return convertNoticePostToPost(noticePost);
-      } catch (noticeError) {
-        console.error('記事が見つかりませんでした:', id);
-        return null;
+        const { getSemiAnnualFortuneArticleById } = await import('./microcms');
+        const semiAnnualPost = await getSemiAnnualFortuneArticleById(id);
+        return convertFortunePostToPost(semiAnnualPost);
+      } catch (semiAnnualError) {
+        // 半期占い記事でも見つからない場合、お知らせ記事として検索
+        try {
+          const { getNoticeArticleById } = await import('./microcms');
+          const noticePost = await getNoticeArticleById(id);
+          return convertNoticePostToPost(noticePost);
+        } catch (noticeError) {
+          console.error('記事が見つかりませんでした:', id);
+          return null;
+        }
       }
     }
   } catch (error) {

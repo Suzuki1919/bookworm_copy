@@ -1,8 +1,11 @@
 {
-  "useMicroCMS": false,
+  "useMicroCMS": true,
+  "_comment": "microCMSのエンドポイント設定",
   "endpoints": {
-    "fortuneArticles": "fortune-articles",
-    "noticeArticles": "notice-articles"
+    "blog": "blog",
+    "posts": "blog",
+    "fortune": "fortune-articles",
+    "notice": "notices"
   },
   "zodiacSigns": [
     "aries",
@@ -17,5 +20,9 @@
     "capricorn",
     "aquarius",
     "pisces"
-  ]
+  ],
+  "fortuneCategories": {
+    "weekly": "週間占い",
+    "semi-annual": "半年占い"
+  }
 } 

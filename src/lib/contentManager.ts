@@ -1,6 +1,6 @@
 import cmsConfig from "@/config/cms.json";
-import { getSinglePage } from "@/lib/contentParser.astro";
-import { getSinglePageFromMicroCMS, type Post } from "@/lib/contentParser.microcms";
+import { getSinglePage } from "@/lib/contentParser";
+import { getSinglePageFromBlog, type Post } from "@/lib/microcms-blog";
 
 /**
  * 設定に基づいてコンテンツを取得する統合関数
@@ -8,9 +8,9 @@ import { getSinglePageFromMicroCMS, type Post } from "@/lib/contentParser.microc
 export const getContent = async (collection: string): Promise<Post[]> => {
   try {
     if (cmsConfig.useMicroCMS) {
-      // microCMSからデータを取得
-      console.log('microCMSからコンテンツを取得中...');
-      return await getSinglePageFromMicroCMS(collection);
+      // microCMSのBlogエンドポイントからデータを取得
+      console.log('microCMSのBlogエンドポイントからコンテンツを取得中...');
+      return await getSinglePageFromBlog();
     } else {
       // ローカルファイルからデータを取得
       console.log('ローカルファイルからコンテンツを取得中...');
