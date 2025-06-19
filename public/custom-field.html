@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI記事生成</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: transparent;
+    }
+    .container {
+      padding: 16px;
+      background: #f5f5f5;
+      border-radius: 8px;
+    }
+    h3 {
+      color: #333;
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 16px;
+    }
+    .form-group {
+      margin-bottom: 12px;
+    }
+    label {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 500;
+      color: #555;
+      font-size: 14px;
+    }
+    select, textarea, input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    select:focus, textarea:focus, input:focus {
+      outline: none;
+      border-color: #4CAF50;
+    }
+    textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+    .button-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+      flex: 1;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    .secondary-button {
+      background-color: #2196F3;
+    }
+    .secondary-button:hover {
+      background-color: #0b7dda;
+    }
+    .loading {
+      display: none;
+      text-align: center;
+      color: #666;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    .loading.show {
+      display: block;
+    }
+    .message {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      display: none;
+    }
+    .message.show {
+      display: block;
+    }
+    .message.error {
+      background-color: #ffebee;
+      color: #c62828;
+      border: 1px solid #ef5350;
+    }
+    .message.success {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #66bb6a;
+    }
+    .config-section {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+    }
+    .config-section h4 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h3>AI記事生成</h3>
+    
+    <div class="form-group">
+      <label for="articleType">記事タイプ</label>
+      <select id="articleType">
+        <option value="weekly">週刊占い</option>
+        <option value="semi-annual">半期占い</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="prompt">生成指示（オプション）</label>
+      <textarea id="prompt" placeholder="具体的な指示を入力してください（例：今週の恋愛運と仕事運を中心に）"></textarea>
+    </div>
+
+    <div class="button-group">
+      <button id="generateButton" onclick="generateArticle()">記事を生成</button>
+      <button class="secondary-button" onclick="insertToContent()">本文に挿入</button>
+    </div>
+
+    <div class="loading" id="loading">
+      記事を生成中です...しばらくお待ちください。
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <div class="config-section">
+      <h4>設定</h4>
+      <div class="form-group">
+        <label for="apiEndpoint">APIエンドポイント</label>
+        <input type="text" id="apiEndpoint" placeholder="https://your-site.com/api/generate-article">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let generatedContent = '';
+    let microcmsIframe = null;
+
+    // microCMSの親フレームとの通信設定
+    function setupMicroCMSCommunication() {
+      // 親フレームからのメッセージを受信
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.action === 'microcms-field-updated') {
+          // フィールドの値が更新された場合の処理
+          console.log('Field updated:', event.data);
+        }
+      });
+
+      // 初期化完了を親フレームに通知
+      if (window.parent !== window) {
+        microcmsIframe = window.parent;
+        microcmsIframe.postMessage({
+          action: 'microcms-custom-field-ready'
+        }, '*');
+      }
+    }
+
+    // 記事を生成
+    async function generateArticle() {
+      const articleType = document.getElementById('articleType').value;
+      const apiEndpoint = document.getElementById('apiEndpoint').value;
+      const prompt = document.getElementById('prompt').value;
+
+      // APIエンドポイントの検証
+      if (!apiEndpoint) {
+        showMessage('APIエンドポイントを設定してください', 'error');
+        return;
+      }
+
+      // 現在編集中の記事情報を取得
+      let zodiacSign = '';
+      let title = '';
+      
+      // microCMSから現在の記事情報を取得する試み
+      if (microcmsIframe) {
+        // タイトルフィールドの値を取得（星座名として使用）
+        const titleElement = window.parent.document.querySelector('input[name="title"]');
+        if (titleElement) {
+          title = titleElement.value;
+          zodiacSign = title;
+        }
+      }
+
+      if (!zodiacSign) {
+        showMessage('記事のタイトル（星座名）を入力してから生成してください', 'error');
+        return;
+      }
+
+      // UI状態をリセット
+      hideMessage();
+      document.getElementById('generateButton').disabled = true;
+      document.getElementById('loading').classList.add('show');
+
+      const fullPrompt = prompt || `${zodiacSign}の${articleType === 'weekly' ? '今週' : '今期'}の運勢を詳しく教えてください。`;
+
+      try {
+        const response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            prompt: fullPrompt,
+            zodiacSign: zodiacSign,
+            type: articleType
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'APIエラーが発生しました');
+        }
+
+        // 成功時の処理
+        generatedContent = data.content;
+        showMessage('記事が生成されました！「本文に挿入」ボタンをクリックして挿入してください。', 'success');
+
+        // APIエンドポイントを保存
+        localStorage.setItem('apiEndpoint', apiEndpoint);
+
+      } catch (error) {
+        showMessage(`エラー: ${error.message}`, 'error');
+      } finally {
+        document.getElementById('generateButton').disabled = false;
+        document.getElementById('loading').classList.remove('show');
+      }
+    }
+
+    // 生成された内容を本文フィールドに挿入
+    function insertToContent() {
+      if (!generatedContent) {
+        showMessage('先に記事を生成してください', 'error');
+        return;
+      }
+
+      // microCMSの本文フィールドに値を設定
+      if (microcmsIframe) {
+        // リッチエディタのcontentフィールドを探す
+        const contentField = window.parent.document.querySelector('.ql-editor');
+        if (contentField) {
+          // 既存の内容に追加（または置換）
+          const htmlContent = `<p>${generatedContent.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`;
+          contentField.innerHTML = htmlContent;
+          
+          // 変更イベントを発火
+          const event = new Event('input', { bubbles: true });
+          contentField.dispatchEvent(event);
+          
+          showMessage('本文に挿入しました！', 'success');
+        } else {
+          // フォールバック：メッセージで通知
+          microcmsIframe.postMessage({
+            action: 'microcms-update-field',
+            field: 'content',
+            value: generatedContent
+          }, '*');
+          showMessage('本文フィールドを更新しました', 'success');
+        }
+      }
+    }
+
+    // メッセージを表示
+    function showMessage(text, type) {
+      const messageEl = document.getElementById('message');
+      messageEl.textContent = text;
+      messageEl.className = `message ${type} show`;
+    }
+
+    // メッセージを非表示
+    function hideMessage() {
+      const messageEl = document.getElementById('message');
+      messageEl.classList.remove('show');
+    }
+
+    // ページ読み込み時の処理
+    window.addEventListener('load', () => {
+      // microCMSとの通信を設定
+      setupMicroCMSCommunication();
+
+      // 保存されたAPIエンドポイントを復元
+      const savedEndpoint = localStorage.getItem('apiEndpoint');
+      if (savedEndpoint) {
+        document.getElementById('apiEndpoint').value = savedEndpoint;
+      }
+
+      // 記事タイプの初期値を設定（URLパラメータから判定）
+      const currentUrl = window.location.href;
+      if (currentUrl.includes('semi-annual')) {
+        document.getElementById('articleType').value = 'semi-annual';
+      }
+    });
+
+    // APIエンドポイントが変更されたら保存
+    document.getElementById('apiEndpoint').addEventListener('change', (e) => {
+      localStorage.setItem('apiEndpoint', e.target.value);
+    });
+  </script>
+</body>
+</html> 
