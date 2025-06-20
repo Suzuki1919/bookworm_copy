@@ -8,8 +8,6 @@ import remarkCollapse from "remark-collapse";
 import remarkToc from "remark-toc";
 import config from "./src/config/config.json";
 
-import cloudflare from "@astrojs/cloudflare";
-
 let highlighter;
 async function getHighlighter() {
   if (!highlighter) {
@@ -60,6 +58,4 @@ export default defineConfig({
     extendDefaultPlugins: true,
     highlighter: getHighlighter,
   },
-
-  adapter: cloudflare()
 });
